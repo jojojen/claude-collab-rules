@@ -35,8 +35,32 @@ When the user says push ("推上去", "ok push", "好 這版上去", "👌", etc
      確認推嗎？
      ```
 2. **Wait** for the user's go-ahead message ("推" / "ok" / "好" / "👌" / etc.)
-3. **Then chain** commit + push for all repos into a single Bash call.
-4. Report all commit hashes after.
+3. **Chain commit + push for ALL repos into a SINGLE Bash invocation.**
+   ONE Go message = ONE Bash call, no matter how many repos. The user
+   has already approved the whole batch by saying go; making them re-
+   approve once per repo turns the permission prompt into a tax on
+   their attention and is a violation of the trust the GO message
+   expressed. Concrete shape:
+   ```bash
+   cd /abs/path/repo1 && git add f1 f2 && git commit -m "$(cat <<'EOF'
+   subject 1
+   ...body...
+   EOF
+   )" && git push ;
+   cd /abs/path/repo2 && git add f3 && git commit -m "$(cat <<'EOF'
+   subject 2
+   ...
+   EOF
+   )" && git push ;
+   cd /abs/path/repo3 && git add f4 && git commit -m "$(cat <<'EOF'
+   subject 3
+   ...
+   EOF
+   )" && git push
+   ```
+   Use `;` between repos (one failure doesn't block the next).
+   Each segment re-specifies `cd <abs_path>/<repo>`.
+4. Report all commit hashes after the single call returns.
 
 ### A2. Each push needs its own summary turn
 
@@ -52,6 +76,11 @@ the chance to acknowledge after.
 - Re-using a previous "ok push" approval for a different commit
 - Asking "are you sure you want to push?" — that's a different kind of
   ask; the summary IS the ask
+- **Splitting a single approved push batch into multiple Bash calls
+  (one per repo).** The user said GO once; they should not see N
+  permission prompts. If you catch yourself reaching for a second
+  `Bash` tool call to push the second repo, stop — append it to the
+  first with `;` instead. See A1 step 3 for the required shape.
 
 ### A4. Chain correctness when pushing multi-repo
 
