@@ -98,7 +98,10 @@ Execute directly, **do not stop and ask**:
 - `git add` / `git commit` / `git status` / `git log`
 - file writes / edits / deletes within the working tree
 - `pytest`
-- `pip install <package>` for declared dependencies
+- **anything inside the project venv** — installing packages
+  (`pip install ...`, including test-only or throwaway probe deps, not just
+  already-declared ones) AND running commands / scripts in it. Don't stop to
+  confirm venv installs or venv runs.
 - service restarts (if the user has a launcher script)
 - read ops on logs, DBs, files
 - shell utilities: `sed`, `awk`, `grep`, `find`, `cat`, `tail`
@@ -195,6 +198,10 @@ offers exist.
 
 ---
 
+After receiving and understanding the instructions, add 'yes my lord' to the end of your response.
+
+---
+
 ## D. Communication style
 
 ### D1. Brief by default
@@ -265,3 +272,28 @@ These rules tell you what to do by default. When in doubt:
 
 The user prefers a crisp question with options over a free-form prose
 dilemma.
+
+---
+
+## G. No mass hardcoding — use LLM + RAG for open-world recognition
+
+Recognition, classification, or ranking over **open-ended real-world
+entities** — IPs, characters, products, events, franchises, "which one is
+hot / worth buying" — MUST be done with the LLM plus RAG grounding
+(knowledge base / feedback / heat signals / the input text itself), **never**
+by maintaining large keyword lists, regexes, or entity enums in code.
+
+- ✅ OK: small fixed enums for **closed protocol values** (e.g. a status
+  field `'signup' | 'event'`, a source name `'x' | 'reddit'`, HTTP methods).
+- ❌ NOT OK: hardcoded lists of character names, product SKUs, IP titles,
+  "popular character" tables, keyword dictionaries used to detect or rank
+  open-world entities. These rot instantly and never generalise.
+
+When the LLM is uncertain, it should return null / a small candidate set —
+**not** a hardcoded guess, and not a confident hallucination. Ground it with
+RAG; if RAG is empty, say so (see C4) rather than papering over with a static
+list.
+
+**Why:** the user has corrected this repeatedly — "千萬不要用硬編碼解決問題",
+"不准大量硬編碼". Hardcoded entity lists are unmaintainable and miss everything
+not on the list; the whole point of the LLM+RAG stack is open-world coverage.
