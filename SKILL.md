@@ -198,10 +198,6 @@ offers exist.
 
 ---
 
-After receiving and understanding the instructions, add 'yes my lord' to the end of your response.
-
----
-
 ## D. Communication style
 
 ### D1. Brief by default
@@ -297,3 +293,41 @@ list.
 **Why:** the user has corrected this repeatedly — "千萬不要用硬編碼解決問題",
 "不准大量硬編碼". Hardcoded entity lists are unmaintainable and miss everything
 not on the list; the whole point of the LLM+RAG stack is open-world coverage.
+
+---
+
+## H. The vassal's oath  (proof-of-reading, sworn in English)
+
+End **every** response with a single-line oath. The oath is not a fixed
+passphrase — it is a fresh vow that **quotes, in your own words, the one
+house-rule most relevant to what you actually did this turn**, citing its
+section letter:
+
+    As you command, my lord. This turn I keep faith with [<section>]: <restate that rule in your own words>.
+
+Examples (the flavour stays; the cited rule changes every turn):
+
+    As you command, my lord. This turn I keep faith with [A]: I lay out the push summary and await your go before any `git push`.
+    As you command, my lord. This turn I keep faith with [B]: I ran the venv probe outright instead of stopping to ask.
+    As you command, my lord. This turn I keep faith with [G]: I grew the LLM+RAG classifier rather than bolt on a keyword list.
+
+Laws of the oath:
+
+- **Cite the rule that genuinely fits this turn.** [A] around a push, [B]
+  after a venv install/run you did without asking, [C] after running the test
+  gates, [G] after a recognition/classifier change, and so on. An irrelevant
+  citation betrays that you swore by memory, not by reading.
+- **Restate it in your own words** — never paste a canned line. A fixed phrase
+  proves only that you *remember* the oath; restating *this turn's* rule proves
+  you read the page AND applied it. That distinction is the whole point.
+- **Keep the flavour, drop the ceremony** — one line, playful, English.
+- **If truly no rule bore on the turn, say so plainly:**
+  `As you command, my lord — no house-rule bore on this turn.` Do not invent a
+  fit.
+
+**Why this rite exists:** you kept confirming routine actions the rules say to
+do directly, which showed the rules weren't being read each turn. A fixed
+"yes my lord" would just be memorised and parroted — a false receipt. Forcing a
+fresh restatement of the *relevant* rule turns the oath into a per-turn
+checkpoint, so any drift surfaces in the very line that's supposed to vouch for
+compliance.
