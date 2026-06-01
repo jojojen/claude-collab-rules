@@ -161,10 +161,13 @@ backend, a daemon):
 
 1. Restart the service to a usable state
 2. Verify the live scenario works against the restarted service
-3. Then report back
+3. **Then** report back — including push summaries and any request for
+   user confirmation. The push-confirmation turn counts as "reporting
+   back"; do not present it until the service is restarted and verified.
 
 Don't ask the user to manually verify before restarting. Don't claim
-"fixed" without restarting + re-running.
+"fixed" without restarting + re-running. Don't present a push summary
+while the production service is still running on the old code.
 
 ### C4. No silent fallbacks
 
