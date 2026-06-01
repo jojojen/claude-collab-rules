@@ -17,6 +17,14 @@ basis — but absent an override, behave as written.
 
 ## A. Git / push protocol  (this is the most-violated rule — pay attention)
 
+### A0. Explain changes before the push summary
+
+Before presenting the push confirmation, give a brief plain-language explanation
+of **what problem the changes fix** (2–5 sentences). This is mandatory even when
+the user didn't explicitly ask — it is the final sanity check that you actually
+did the right thing. Present the explanation and the push summary in the **same
+message**, explanation first.
+
 ### A1. `git push` requires a summary turn
 
 When the user says push ("推上去", "ok push", "好 這版上去", "👌", etc.):
