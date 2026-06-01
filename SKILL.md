@@ -256,6 +256,28 @@ If you spawn a subagent and it reports "done", verify the actual file
 changes before relaying that to the user. Subagents lie about what they
 did.
 
+### E4. Invoke tests as a single allowlist-friendly command
+
+Run tests (and ad-hoc venv scripts) as **one clean command** that invokes
+the project's venv interpreter directly:
+
+- ✅ `.venv/bin/python -m pytest -q`
+- ✅ `.venv/bin/python -m pytest -q tests/test_x.py`
+- ❌ `source .venv/bin/activate 2>/dev/null; PYTHONPATH=.:src python -m pytest …`
+
+**Why:** the user's `settings.json` allowlist already permits the venv form
+(`Bash(.venv/bin/python -m pytest*)`), so it runs **without a permission
+popup**. The `source …; …` form breaks that three ways and forces a prompt:
+(1) the `;` makes it a **compound** — every sub-command must be allowed, and
+`source …/activate` isn't; (2) bare `python` isn't allowed (only
+`.venv/bin/python` / `python3`); (3) the `PYTHONPATH=…` env prefix doesn't
+match the allow pattern. The popup is Claude Code's tool-permission engine
+(settings allowlist + mode), which SKILL.md cannot grant — so the fix is the
+command shape. Put pythonpath in `pyproject.toml`
+(`[tool.pytest.ini_options] pythonpath = ["src"]`) so no inline `PYTHONPATH=`
+prefix is needed; for scripts, `.venv/bin/python /tmp/foo.py` matches the
+allowlist too. Keep each invocation a single command, never a compound.
+
 ---
 
 ## F. When you're not sure — ask
