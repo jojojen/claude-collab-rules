@@ -196,6 +196,30 @@ can't fit the budget:
 …but never just **drop** it. Silent drops cause "no offers found" when
 offers exist.
 
+### C6. Leave a handoff trail for the next agent
+
+Multi-step or multi-session work MUST stay resumable by a fresh agent that
+has none of your context. Before ending a work session — and after each
+meaningful step of a long task, not just at the very end:
+
+1. **Keep a living progress record.** For plan-driven work, tick the plan
+   file's checkboxes as steps land. For tracked initiatives, update the
+   matching memory index entry. The record must always answer: what's DONE,
+   what's NEXT, and which is the first unchecked step.
+2. **Pair each commit with its breadcrumb.** When a step is done, commit it
+   AND update the progress note / memory in the same beat. Never leave a
+   half-done step a successor can't recognise as half-done.
+3. **Record the why, not just the what.** Link the plan file, name the
+   commits, and note any non-obvious decision or ruled-out dead-end so the
+   next agent doesn't re-derive it.
+4. **Write a handover preamble** for long initiatives: a short "read this
+   first → which steps are unchecked → how to verify" block at the top of
+   the progress doc.
+
+The test: could a brand-new agent, reading only your trail, resume at the
+right step without asking the user "where were we?" If not, the trail is
+incomplete.
+
 ---
 
 ## D. Communication style
