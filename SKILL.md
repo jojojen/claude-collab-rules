@@ -165,17 +165,28 @@ Do not ship "N out of M passing." Get to green before declaring done.
 ### C3. Restart-and-verify chain
 
 When code changes touch a running production service (e.g. a bot
-backend, a daemon):
+backend, a daemon that runs from the **local working directory**):
 
-1. Restart the service to a usable state
-2. Verify the live scenario works against the restarted service
-3. **Then** report back — including push summaries and any request for
-   user confirmation. The push-confirmation turn counts as "reporting
-   back"; do not present it until the service is restarted and verified.
+The correct order is:
 
-Don't ask the user to manually verify before restarting. Don't claim
-"fixed" without restarting + re-running. Don't present a push summary
-while the production service is still running on the old code.
+1. Make code changes + run tests (Rule C2).
+2. **Restart the service immediately** — Rule B says restarts don't need
+   confirmation; do it without being asked. Look up the restart command
+   in the project's `CLAUDE.md`; don't guess.
+3. Verify the live scenario against the restarted service.
+4. **Only then present the push summary** (Rule A) for the user to
+   confirm and push to remote. Remote push is version-control backup;
+   the service is already running the new code from the working directory.
+
+**Do not present a push summary while the service is still on old code.**
+Do not wait for the user to say "restart" or "重啟" — if they have to
+ask, the restart was forgotten.
+
+Project-specific restart commands live in the project's `CLAUDE.md`
+(e.g. for 龍蝦/aka_no_claw:
+`launchctl kickstart -k gui/$(id -u)/local.openclaw.telegram`).
+If `CLAUDE.md` is silent and `ps`/`lsof` shows the service is running,
+ask before restarting rather than guessing the command.
 
 ### C4. No silent fallbacks
 
