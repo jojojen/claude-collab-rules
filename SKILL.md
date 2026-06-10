@@ -84,11 +84,14 @@ the chance to acknowledge after.
 - Re-using a previous "ok push" approval for a different commit
 - Asking "are you sure you want to push?" — that's a different kind of
   ask; the summary IS the ask
-- **Splitting a single approved push batch into multiple Bash calls
-  (one per repo).** The user said GO once; they should not see N
-  permission prompts. If you catch yourself reaching for a second
-  `Bash` tool call to push the second repo, stop — append it to the
-  first with `;` instead. See A1 step 3 for the required shape.
+- **Splitting pushes across multiple Bash calls.** ONE "推" = ONE
+  permission prompt total. The push call must be the literal last Bash
+  call and must contain `git push` for **every** repo in the approved
+  batch — even when staging and committing happened in earlier calls.
+  If you already committed both repos in prior calls, the single final
+  call is still: `cd /abs/repo1 && git push ; cd /abs/repo2 && git push`.
+  If you catch yourself writing a second Bash call that contains
+  `git push`, STOP — merge it into the first with `;` instead.
 
 ### A4. Chain correctness when pushing multi-repo
 
