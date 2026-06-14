@@ -17,6 +17,22 @@ basis — but absent an override, behave as written.
 
 ## A. Git / push protocol  (this is the most-violated rule — pay attention)
 
+### A0a. STOP — restart gate (run before you type one word of a push summary)
+
+If the changes touch a service that runs from the working directory (any bot
+backend / daemon — see C3), the service is **already serving the new code from
+disk**, so you MUST restart-and-verify it **before** the push summary — never
+after. Writing a push summary is your trigger to ask: *"have I restarted and
+verified the live service yet?"* If the answer is no, do that first. Treat a
+push summary while the service is still on old code as a hard violation. If the
+user has to ask "你有重啟嗎 / did you restart?", you already failed the gate.
+
+Restart gate checklist (all three before any summary):
+1. Restarted via the project's `CLAUDE.md` command (龍蝦:
+   `launchctl kickstart -k gui/$(id -u)/local.openclaw.telegram`).
+2. Confirmed the new process is live (log marker / `lsof` ESTABLISHED).
+3. Verified the actual changed behaviour against the restarted service.
+
 ### A0. Explain changes before the push summary
 
 Before presenting the push confirmation, give a brief plain-language explanation
@@ -183,7 +199,9 @@ The correct order is:
 
 **Do not present a push summary while the service is still on old code.**
 Do not wait for the user to say "restart" or "重啟" — if they have to
-ask, the restart was forgotten.
+ask, the restart was forgotten. This is enforced at the top of the push
+protocol as the **A0a restart gate** — the push summary itself is the
+trigger to verify you have already restarted-and-verified.
 
 Project-specific restart commands live in the project's `CLAUDE.md`
 (e.g. for 龍蝦/aka_no_claw:
@@ -244,6 +262,37 @@ meaningful step of a long task, not just at the very end:
 The test: could a brand-new agent, reading only your trail, resume at the
 right step without asking the user "where were we?" If not, the trail is
 incomplete.
+
+### C7. Be polite to external hosts — never amplify rate limits
+
+Scrapers and price/data crawlers hit third-party sites (Mercari, Rakuma,
+Yuyutei, official stores…). Getting the shared IP rate-limited or banned is
+a top-priority failure (priority #2 「不被封鎖」). When writing or reviewing
+any crawler / HTTP-fetch code, eliminate these amplifiers:
+
+1. **No blind fan-out.** Don't fire one request per category / page / code
+   per logical search "just in case." Route to the *one* endpoint the query
+   needs; if you can't identify it, skip the host rather than spraying every
+   variant. (e.g. a Pokémon card must hit only yuyutei `poc`, not also
+   ygo/ws/ua/op.)
+2. **No retry/curl amplification on 429.** A 429 means *slow down*, not *try
+   harder*. One 429 must not spawn a 30s-back-off retry **and** a curl
+   re-fetch — that turns one polite request into three and prolongs the
+   cooldown. Fail fast on 429.
+3. **Circuit-break per host.** Once a host returns 429, short-circuit further
+   requests to that host for a cooldown window instead of continuing to poke
+   it. Hammering a limiter only extends the ban; backing off lets it clear.
+4. **Cap per-operation request count.** Detail-page / verification loops that
+   fan out one request per result are bursts — abort the batch the moment the
+   host starts limiting you.
+5. **Route raw fetches through the shared client.** Any `urlopen`/`requests`
+   call that bypasses the project's HTTP client also bypasses its breaker —
+   wire it into the same per-host guard, or it becomes the next leak.
+
+When asked to fix a rate-limit issue, **don't stop at the one reported
+endpoint** — audit every crawler path for the same amplifiers and fix them
+all in the same pass. Local-only calls (e.g. 127.0.0.1 Ollama) are exempt;
+they can't IP-ban you.
 
 ---
 
