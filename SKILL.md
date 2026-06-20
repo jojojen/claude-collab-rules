@@ -294,6 +294,30 @@ endpoint** — audit every crawler path for the same amplifiers and fix them
 all in the same pass. Local-only calls (e.g. 127.0.0.1 Ollama) are exempt;
 they can't IP-ban you.
 
+### C8. Generators: show the user the actual fresh output, not a green checkmark
+
+When the change is to something that **produces content the user reads** — a
+knowledge-extraction / summarisation / digest / classification pipeline — "I
+verified it live" is only true if you put the **actual newly-generated artefact
+in front of the user**, in the channel they normally read it (Telegram digest,
+the report file, the rendered page…). A passing unit test or a probe script that
+asserts `result is not None` proves the code *runs*; it does NOT prove the
+*content is right*, and the user cannot judge what they cannot see.
+
+So for any generator change, before reporting done:
+
+1. Run the **new** code end-to-end to generate a genuinely fresh item (not a
+   replay of an old DB row).
+2. **Surface that item to the user** — send the digest, print the full stored
+   summary, attach the file. Show successes AND rejections (a correct refusal is
+   evidence the guardrail works).
+3. Only then claim success. "Tests pass" is necessary, not sufficient.
+
+**Why:** the user corrected this — after a hallucination fix they said
+「我沒看到新的代碼產生的新知識 無法判斷」(I haven't seen new knowledge the new code
+produced, so I can't judge). A fix to a content generator that the user can't
+read is unfinished. Don't ask them to approve quality they were never shown.
+
 ---
 
 ## D. Communication style
