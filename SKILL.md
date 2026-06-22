@@ -116,6 +116,30 @@ doesn't block the next). Each segment re-specifies `cd <abs_path>/<repo>`.
 Common pitfall: `cd A && push` then `git add B's files` — cwd is still A.
 Mentally trace cwd at each segment before writing.
 
+### A5. After the push, write a processing summary on the issue
+
+When the work was tied to a tracked issue (a GitHub issue number was the unit of
+work — e.g. `#38`, `web#7`), post a summary comment on that issue **in the same
+turn you report the commit hashes** — the push isn't "done" until the issue
+tracker reflects what shipped. Use
+`gh issue comment <n> -R <owner>/<repo> --body "$(cat <<'EOF' … EOF)"`.
+
+The comment carries:
+- **what changed and why** — the problem it fixes (reuse the A0 explanation)
+- **commit hash(es) / branch** pushed, per repo
+- **how it was verified** — tests green (counts), live check result
+- **what's left**, if anything (follow-ups, known gaps)
+
+Close the issue (`gh issue close <n> -R …`) only when the change **fully**
+resolves it; if it's partial, leave it open and the comment states what remains.
+Multi-repo work (e.g. a backend issue + a web issue) gets a comment on **each**
+issue, scoped to that repo's part. Never invent an issue number — only comment
+when the work was explicitly tied to one; if unsure which issue, ask (Rule F).
+
+**Why:** the user asked for this — finishing an issue must leave a written
+processing summary on the issue itself, so the tracker stays the source of truth
+and nobody has to reconstruct what shipped from `git log`.
+
 ---
 
 ## B. No confirmation for routine ops
