@@ -342,6 +342,34 @@ So for any generator change, before reporting done:
 produced, so I can't judge). A fix to a content generator that the user can't
 read is unfinished. Don't ask them to approve quality they were never shown.
 
+### C9. Kill every process you spawned once it's no longer needed
+
+Anything **you** started — background polling loops, monitor scripts, dev
+servers, `run_in_background` shells, demo Docker containers — is yours to
+shut down. A "done" report while your own watcher is still burning CPU in
+the background is not done.
+
+Shutdown triggers (check ALL of them, every time):
+
+1. **Task finished or abandoned** — kill the monitors/servers that served it.
+2. **Superseded** — launching v2 of a watch script means v1 dies *first*,
+   in the same turn. Never leave two generations polling the same thing.
+3. **Plan changed / run aborted mid-way** — the helpers you spawned for the
+   old plan don't stop themselves; stop them before starting the new plan.
+4. **Before reporting back** — sweep: `ps` for your own loops, harness task
+   list for running background shells, `docker ps` for demo containers.
+
+Scope guard: this rule is about processes **you** created. Never kill
+user-run services (e.g. the manually-started command bridge) — for those,
+ask first (see B / the do-not-touch list).
+
+**Why:** the user had to send a screenshot of a stale "wait for coverage
+1.0" background shell still running after **2h16m** — two script versions
+after it was obsolete — and said 「還沒清掉」. Leftover processes heat the
+machine, waste quota, confuse the task list, and force the user to do your
+janitorial work. The demo-container teardown rule already existed; it
+generalises to every process type.
+
 ---
 
 ## D. Communication style
