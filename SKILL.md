@@ -452,6 +452,33 @@ command shape. Put pythonpath in `pyproject.toml`
 prefix is needed; for scripts, `.venv/bin/python /tmp/foo.py` matches the
 allowlist too. Keep each invocation a single command, never a compound.
 
+### E5. Cheap-model delegation only works for permission-free tasks
+
+Offloading simple work to a cheaper model saves tokens ONLY if the task
+can run without permission prompts. A background subagent cannot answer
+an interactive permission prompt — if its task needs gated tools
+(docker, curl to services, file writes outside the sandbox), it stalls
+at the first prompt, burns its whole spawn cost, and returns nothing.
+
+Before delegating to a cheap model, check what the task actually touches:
+
+- **Safe to delegate:** pure reads, text transforms, summarising files,
+  classification — nothing that trips a permission gate.
+- **Don't delegate — script it instead:** anything needing docker / curl /
+  network / privileged shell. A small shell script run by the main agent
+  (allowlisted once, output to a file, log only state changes) is cheaper
+  than a stalled subagent AND cheaper than the main agent polling.
+
+If a delegated agent comes back empty-handed at a permission wall, cut
+losses immediately: do the work directly, don't respawn with a reworded
+prompt.
+
+**Why:** live case — an AC13 docker+curl check was delegated to a cheap
+background model to save tokens; it stalled asking for bash permission it
+could never receive, and the main agent redid the job with a 20-line
+script in less time than the spawn took. The user then asked for this
+lesson to be recorded (「便宜模型省 token 的前提是任務不需要權限提示」).
+
 ---
 
 ## F. When you're not sure — ask
