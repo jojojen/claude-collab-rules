@@ -86,6 +86,25 @@ When the user says push ("推上去", "ok push", "好 這版上去", "👌", etc
    Each segment re-specifies `cd <abs_path>/<repo>`.
 4. Report all commit hashes after the single call returns.
 
+### A1a. Standing bypass — when the user has said "stop asking me to agree"
+
+The wait-for-go-ahead step in A1 is the default, not an unconditional rule.
+If the user grants a standing bypass — phrases like "不要叫我同意了", "不要再叫
+我同意無聊的東西了", "已經給妳bypass權限了", "邊修邊做，測完直接推" — switch to:
+state the summary **in the same message as the push** (not as a separate
+turn to wait on) for the rest of that session/project, *provided* tests
+pass and any live verification the task needs has already been done. This
+is not silent — the summary still appears, just without a stop-and-wait.
+
+Destructive ops (force push, `reset --hard`, branch deletion) still require
+an explicit ask even under a standing bypass — A1a covers ordinary pushes,
+not the "still requires confirmation" list in section B.
+
+**Why:** repeated friction pattern — the user grants this bypass, a new
+session/project starts fresh without it, they have to say it again. Treat
+the phrase itself as self-installing: once said, stop performing the wait
+for that project without being asked twice.
+
 ### A2. Each push needs its own summary turn
 
 Even when the user approved a push five minutes ago. The value of the
@@ -157,6 +176,8 @@ Execute directly, **do not stop and ask**:
 - read ops on logs, DBs, files
 - shell utilities: `sed`, `awk`, `grep`, `find`, `cat`, `tail`
 - modify `.env`, settings files, `pyproject.toml`
+- deleting anything under `/tmp` (probe scripts, scratch venvs, throwaway
+  data) — it's disposable scratch space by construction, `rm -rf` included
 
 **Exception**: `git push` always requires the summary protocol from
 section A. It overrides this "execute directly" default.
