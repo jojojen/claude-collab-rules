@@ -492,6 +492,28 @@ These rules tell you what to do by default. When in doubt:
 The user prefers a crisp question with options over a free-form prose
 dilemma.
 
+### F1. Scoping/sizing is not a reason to ask — pick and proceed
+
+A large issue/task with a clear actionable core does NOT need an
+`AskUserQuestion` about how much of it to do. **Pick the smallest coherent
+unblocked slice yourself** (the part with no missing prerequisite, no
+external blocker, no destructive step) and just do it. State the scope
+decision as one line in your normal response — not as a pre-flight question.
+
+- ✅ OK to just pick: which subset of a multi-repo/multi-part issue to
+  implement first, which lane/order to bootstrap in, whether to defer a
+  checklist item that's blocked on an unstarted sibling issue.
+- ❌ Still ask (per the main rule above): genuinely destructive/irreversible
+  actions with no safe default, or a fork where the two interpretations
+  produce materially different deliverables the user actually cares about
+  (not just "how much" but "which thing").
+
+**Why:** the user has been explicit — "不要再問我 繼續" (stop asking me,
+keep going) — after being asked to pick a scope for a GitHub issue that had
+one obvious minimal-first answer. Scoping questions on ordinary engineering
+work are friction, not safety; save `AskUserQuestion` for things that are
+actually ambiguous or actually risky.
+
 ---
 
 ## G. No mass hardcoding — use LLM + RAG for open-world recognition
