@@ -149,8 +149,15 @@ The comment carries:
 - **how it was verified** — tests green (counts), live check result
 - **what's left**, if anything (follow-ups, known gaps)
 
-Close the issue (`gh issue close <n> -R …`) only when the change **fully**
-resolves it; if it's partial, leave it open and the comment states what remains.
+**NEVER close the issue yourself.** Closing is the user's acceptance act, not
+part of shipping: post the summary comment, say "ready for your acceptance",
+and leave the issue OPEN — even when you believe every acceptance item is met,
+and even under a standing push bypass (A1a covers pushes, not issue closure).
+Only run `gh issue close` when the user explicitly says to close that issue
+(or has accepted the fix in words). Passing your own tests is never acceptance:
+the user reviews with their own E2E checks, and a self-closed issue hides work
+from that review. This was violated once (#51 closed after green unit tests,
+then failed the user's E2E acceptance) — treat it as a hard rule.
 Multi-repo work (e.g. a backend issue + a web issue) gets a comment on **each**
 issue, scoped to that repo's part. Never invent an issue number — only comment
 when the work was explicitly tied to one; if unsure which issue, ask (Rule F).
